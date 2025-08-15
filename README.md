@@ -118,7 +118,7 @@ static const char *TAG = "parallel_io_camera";
 // Wi-Fi details
 #define ESP_WIFI_SSID "camera@2.4GHz"
 #define ESP_WIFI_PASS "my_camera"
-#define ESP_WIFI_CHANNEL 44
+#define ESP_WIFI_CHANNEL 2 // Set channel over 36 for 5GHz (ESP32-C5)
 #define MAX_STA_CONN 4
 
 
@@ -736,5 +736,6 @@ Frees a previously received frame buffer.
 
 * `ESP_ERR_INVALID_ARG` — Invalid buffer.
 * `ESP_OK` — Success.
+
 
 ---
