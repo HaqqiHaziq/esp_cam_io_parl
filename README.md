@@ -44,8 +44,8 @@ This repository provides **ESP Parallel IO Camera** component (`esp_cam_io_parl`
 
 ### Using with ESP-IDF
 
-- Download and extract the component file.
-- Insert the component under the `components` folder in your project file.
+- Download and extract the component .zip file.
+- Insert the component folder under the `components` folder in your project file.
 - If possible, enable PSRAM in `menuconfig` (also set Flash and PSRAM frequiencies to 80MHz for optimal performance)
 - Include the component in your main code:
   ```c
@@ -739,3 +739,4 @@ Frees a previously received frame buffer.
 
 
 ---
+
