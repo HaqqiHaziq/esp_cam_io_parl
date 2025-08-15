@@ -1,0 +1,22 @@
+{
+  "name": "esp_cam_io_parl",
+  "version": "0.0.1",
+  "keywords": "esp32, camera, esp32-cam, esp32-parlio",
+  "description": "ESP32 compatible driver for OV2640, OV3660 and OV5640 image sensors.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HaqqiHaziq/esp_cam_io_parl"
+  },
+  "frameworks": "espidf",
+  "platforms": "*",
+  "build": {
+    "flags": [
+      "-Idriver/include",
+      "-Isensors/private_include",
+      "-fno-rtti"
+    ],
+    "includeDir": ".",
+    "srcDir": ".",
+    "srcFilter": ["-<*>", "+<driver>", "+<sensors>"]
+  }
+}

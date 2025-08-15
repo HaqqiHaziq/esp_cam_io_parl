@@ -1,0 +1,62 @@
+menu "Parallel IO Camera configuration"
+
+    config ESP_CAM_IO_PARL_OV2640
+        bool "Support OV2640 2MP"
+        depends on (SOC_PARLIO_RX_UNIT_MAX_DATA_WIDTH > 8)
+        default y
+        help
+            Enable this option if you want to use the OV2640.
+            Disable this option to save memory.
+
+    config ESP_CAM_IO_PARL_OV3660
+        bool "Support OV3660 3MP"
+        default y
+        help
+            Enable this option if you want to use the OV3360.
+            Disable this option to save memory.
+
+    config ESP_CAM_IO_PARL_OV5640
+        bool "Support OV5640 5MP"
+        default y
+        help
+            Enable this option if you want to use the OV5640.
+            Disable this option to save memory.
+    
+    config ESP_CAM_IO_PARL_OV5640_AF
+        bool "Enable autofocus on OV5640"
+        depends on ESP_CAM_IO_PARL_OV5640
+        default n
+        help
+            Enable this option if you want to use the autofocus function on OV5640.
+            Disable this option to save memory.
+
+    choice ESP_CAM_IO_PARL_SCCB_I2C_PORT
+        bool "I2C peripheral to use for SCCB"
+        default ESP_CAM_IO_PARL_SCCB_I2C_PORT0
+
+        config ESP_CAM_IO_PARL_SCCB_I2C_PORT0
+            bool "I2C0"
+        config ESP_CAM_IO_PARL_SCCB_I2C_PORT1
+            bool "I2C1"
+            depends on SOC_HP_I2C_NUM > 1
+        config ESP_CAM_IO_PARL_SCCB_LP_I2C_PORT0
+            bool "LP I2C0"
+            depends on SOC_LP_I2C_SUPPORTED
+    endchoice
+
+    config ESP_CAM_IO_PARL_SCCB_CLK_FREQ
+    int "SCCB clock frequency"
+    default 100000
+    range 100000 400000
+    help
+        Increasing this value can reduce the initialization time of the sensor.
+        Please refer to the relevant instructions of the sensor to adjust the value.
+
+    config ESP_CAM_IO_PARL_PAYLOAD_SIZE
+        int "DMA buffer size"
+        range 8192 65535
+        default 32768
+        help
+            Maximum value of DMA payload buffer
+            Larger values may fail to allocate due to insufficient contiguous memory blocks, and smaller value may cause DMA interrupt to be too frequent.
+endmenu
