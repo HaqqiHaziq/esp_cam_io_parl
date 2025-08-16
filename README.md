@@ -1,5 +1,7 @@
 # ESP32 Parallel IO Camera Driver
 
+[![Latest Release](https://img.shields.io/github/release/HaqqiHaziq/esp_cam_io_parl.svg)]([https://GitHub.com/ESP32Async/ESPAsyncWebServer](https://github.com/HaqqiHaziq/esp_cam_io_parl)/releases/)
+
 ## General Information
 
 This repository provides **ESP Parallel IO Camera** component (`esp_cam_io_parl`) that utilizes Parallel IO (PARLIO) peripheral to receive image data over DVP (Digital Video Port) using ESP32 SoCs that are capable of driving image sensors.
@@ -736,5 +738,6 @@ Frees a previously received frame buffer.
 
 * `ESP_ERR_INVALID_ARG` — Invalid buffer.
 * `ESP_OK` — Success.
+
 
 ---
