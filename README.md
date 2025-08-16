@@ -44,8 +44,8 @@ This repository provides **ESP Parallel IO Camera** component (`esp_cam_io_parl`
 
 ### Using with ESP-IDF
 
-- Download and extract the component .zip file.
-- Insert the component folder under the `components` folder in your project file.
+- Download and extract the component file.
+- Insert the component under the `components` folder in your project file.
 - If possible, enable PSRAM in `menuconfig` (also set Flash and PSRAM frequiencies to 80MHz for optimal performance)
 - Include the component in your main code:
   ```c
@@ -118,7 +118,7 @@ static const char *TAG = "parallel_io_camera";
 // Wi-Fi details
 #define ESP_WIFI_SSID "camera@2.4GHz"
 #define ESP_WIFI_PASS "my_camera"
-#define ESP_WIFI_CHANNEL 2 // Set channel over 36 for 5GHz (ESP32-C5)
+#define ESP_WIFI_CHANNEL 44
 #define MAX_STA_CONN 4
 
 
@@ -737,6 +737,4 @@ Frees a previously received frame buffer.
 * `ESP_ERR_INVALID_ARG` — Invalid buffer.
 * `ESP_OK` — Success.
 
-
 ---
-
