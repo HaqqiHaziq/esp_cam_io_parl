@@ -1,6 +1,6 @@
 # ESP32 Parallel IO Camera Driver
 
-[![Latest Release](https://img.shields.io/github/release/HaqqiHaziq/esp_cam_io_parl.svg)]([https://GitHub.com/ESP32Async/ESPAsyncWebServer](https://github.com/HaqqiHaziq/esp_cam_io_parl)/releases/)
+[![Latest Release](https://img.shields.io/github/release/HaqqiHaziq/esp_cam_io_parl.svg)]([[https://GitHub.com/ESP32Async/ESPAsyncWebServer](https://github.com/HaqqiHaziq/esp_cam_io_parl)](https://github.com/HaqqiHaziq/esp_cam_io_parl/releases/)
 
 ## General Information
 
@@ -741,3 +741,4 @@ Frees a previously received frame buffer.
 
 
 ---
+
