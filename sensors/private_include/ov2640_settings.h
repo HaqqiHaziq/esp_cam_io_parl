@@ -17,7 +17,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "../../../esp_cam_io_parl-v0.1.0-beta.2/sensors/private_include/ov2640_regs.h"
+#include "ov2640_regs.h"
 #include "esp_attr.h"
 
 typedef enum {

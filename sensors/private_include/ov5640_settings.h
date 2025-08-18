@@ -4,10 +4,11 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "sensor.h"
 #include "ov5640_regs.h"
 #include "esp_attr.h"
 
-static const ratio_settings_t ratio_table[] = {
+static const camera_ratio_settings_t ratio_table[] = {
     //  mw,   mh,  sx,  sy,   ex,   ey, ox, oy,   tx,   ty
     { 2592, 1944,   0,   0, 2623, 1951, 16, 4, 2844, 1968 }, //4x3
     { 2592, 1728,   0, 110, 2623, 1843, 16, 4, 2844, 1752 }, //3x2
