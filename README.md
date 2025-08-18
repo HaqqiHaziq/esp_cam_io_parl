@@ -433,30 +433,29 @@ void app_main(void) {
 
 Configuration structure for camera sensor initialization.
 
-| Field           | Type             | Description                                 |
-| --------------- | ---------------- | ------------------------------------------- |
-| `pwdn_io`       | `gpio_num_t`     | GPIO pin for camera power-down line         |
-| `reset_io`      | `gpio_num_t`     | GPIO pin for camera reset line              |
-| `xclk_io`       | `gpio_num_t`     | GPIO pin for camera XCLK line               |
-| `sda_io`        | `gpio_num_t`     | GPIO pin for camera SDA line                |
-| `scl_io`        | `gpio_num_t`     | GPIO pin for camera SCL line                |
-| `xclk_hz`       | `uint32_t`       | XCLK frequency in Hz                        |
-| `pixel_format`  | `pixformat_t`    | Pixel format (`PIXFORMAT_*`)                |
-| `frame_size`    | `framesize_t`    | Frame size (`FRAMESIZE_*`)                  |
-| `ledc_timer`    | `ledc_timer_t`   | LEDC timer for XCLK generation              |
-| `ledc_channel`  | `ledc_channel_t` | LEDC channel for XCLK generation            |
-| `jpeg_quality`  | `int`            | JPEG quality (0–63, lower = higher quality) |
-| `sccb_i2c_port` | `int`            | I2C port number for SCCB                    |
+| Field           | Type                 | Description                                 |
+| --------------- | -------------------- | ------------------------------------------- |
+| `pwdn_io`       | `gpio_num_t`         | GPIO pin for camera power-down line         |
+| `reset_io`      | `gpio_num_t`         | GPIO pin for camera reset line              |
+| `xclk_io`       | `gpio_num_t`         | GPIO pin for camera XCLK line               |
+| `sda_io`        | `gpio_num_t`         | GPIO pin for camera SDA line                |
+| `scl_io`        | `gpio_num_t`         | GPIO pin for camera SCL line                |
+| `xclk_hz`       | `uint32_t`           | XCLK frequency in Hz                        |
+| `pixel_format`  | `camera_pixformat_t` | Pixel format (`PIXFORMAT_*`)                |
+| `frame_size`    | `framesize_t`        | Frame size (`FRAMESIZE_*`)                  |
+| `ledc_timer`    | `ledc_timer_t`       | LEDC timer for XCLK generation              |
+| `ledc_channel`  | `ledc_channel_t`     | LEDC channel for XCLK generation            |
+| `jpeg_quality`  | `int`                | JPEG quality (0–63, lower = higher quality) |
 
 #### `image_info_t`
 
 Data structure containing image properties.
 
-| Field    | Type          | Description            |
-| -------- | ------------- | ---------------------- |
-| `width`  | `size_t`      | Image width in pixels  |
-| `height` | `size_t`      | Image height in pixels |
-| `format` | `pixformat_t` | Pixel format           |
+| Field    | Type                 | Description            |
+| -------- | -------------------- | ---------------------- |
+| `width`  | `size_t`             | Image width in pixels  |
+| `height` | `size_t`             | Image height in pixels |
+| `format` | `camera_pixformat_t` | Pixel format           |
 
 ### Functions
 
@@ -504,13 +503,13 @@ Pointer to `image_info_t` structure.
 #### `esp_camera_sensor_get`
 
 ```c
-sensor_t *esp_camera_sensor_get(void);
+camera_sensor_t *esp_camera_sensor_get(void);
 ```
 
 Get a pointer to the sensor control structure.
 
 **Returns:**
-Pointer to `sensor_t` structure.
+Pointer to `camera_sensor_t` structure.
 
 #### `esp_camera_sensor_save_to_nvs`
 
@@ -740,4 +739,5 @@ Frees a previously received frame buffer.
 
 
 ---
+
 
