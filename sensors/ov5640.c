@@ -14,6 +14,7 @@
 #include "ov5640_regs.h"
 #include "ov5640_settings.h"
 #include "sccb.h"
+#include "sensor.h"
 #include "xclk.h"
 #include <stdint.h>
 #include <stdlib.h>
@@ -423,16 +424,14 @@ static int set_framesize(sensor_t *sensor, framesize_t framesize) {
     aspect_ratio_t ratio = resolution[framesize].aspect_ratio;
     ratio_settings_t settings = ratio_table[ratio];
     
-    if (framesize == FRAMESIZE_QSXGA || framesize == FRAMESIZE_SXGAM) { // Adjust the max width, height and offset
-        settings.max_width = resolution[FRAMESIZE_QSXGA].width;
-        settings.max_height = resolution[FRAMESIZE_QSXGA].height;
+    if (framesize == FRAMESIZE_SXGAM || framesize == FRAMESIZE_HD) { // Adjust the offset
         settings.offset_x = 32;
         settings.offset_y = 16;
     }
 
     sensor->status.binning = (w <= (settings.max_width / 2) && h <= (settings.max_height / 2));
     sensor->status.scale = !((w == settings.max_width && h == settings.max_height) ||
-          (w == (settings.max_width / 2) && h == (settings.max_height / 2)));
+          (w == (settings.max_width / 2) && h == (settings.max_height / 2))) && !(framesize == FRAMESIZE_WQXGA || framesize == FRAMESIZE_QHD || framesize == FRAMESIZE_QSXGA);
 
     ret = write_addr_reg(sensor->sccb_address, X_ADDR_ST_H, settings.start_x, settings.start_y) ||
           write_addr_reg(sensor->sccb_address, X_ADDR_END_H, settings.end_x, settings.end_y) ||
@@ -471,9 +470,6 @@ static int set_framesize(sensor_t *sensor, framesize_t framesize) {
     if (sensor->pixformat == PIXFORMAT_JPEG) {
         // 10MHz PCLK
         uint8_t sys_mul = 200;
-        if (framesize < FRAMESIZE_XGA) {
-            sys_mul = 180;
-        }
         ret = set_pll(sensor, false, sys_mul, 4, 2, false, 2, true, 4);
         // Set PLL: bypass: 0, multiplier: sys_mul, sys_div: 4, pre_div: 2,
         // root_2x: 0, pclk_root_div: 2, pclk_manual: 1, pclk_div: 4
