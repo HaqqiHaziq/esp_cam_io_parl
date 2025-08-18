@@ -45,7 +45,12 @@ This repository provides **ESP Parallel IO Camera** component (`esp_cam_io_parl`
 
 
 ### Using with ESP-IDF
-
+#### Through `idf.py add-dependency`
+- To add the component as a dependency, run:
+```c
+idf.py add-dependency --git "https://github.com/HaqqiHaziq/esp_cam_io_parl.git" esp_cam_io_parl
+```
+#### Download and apply it locally
 - Download and extract the component file.
 - Insert the component under the `components` folder in your project file.
 - If possible, enable PSRAM in `menuconfig` (also set Flash and PSRAM frequiencies to 80MHz for optimal performance)
@@ -729,3 +734,4 @@ Frees a previously received frame buffer.
 
 * `ESP_ERR_INVALID_ARG` — Invalid buffer.
 * `ESP_OK` — Success.
+
