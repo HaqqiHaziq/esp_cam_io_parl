@@ -1,9 +1,3 @@
-/*
- * esp_cam_io_parl.h
- *
- *  Created on: 13 Aug 2025
- *      Author: Hp
- */
 #ifndef _ESP_CAM_IO_PARL_H_
 #define _ESP_CAM_IO_PARL_H_
 

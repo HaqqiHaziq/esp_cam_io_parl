@@ -1,9 +1,3 @@
-/*
- * esp_camera_sensor.h
- *
- *  Created on: 13 Aug 2025
- *      Author: Hp
- */
 #ifndef _ESP_CAMERA_SENSOR_H_
 #define _ESP_CAMERA_SENSOR_H_
 
