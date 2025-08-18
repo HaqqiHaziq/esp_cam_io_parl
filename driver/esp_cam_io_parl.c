@@ -47,7 +47,7 @@ static bool IRAM_ATTR on_partial_receive_callback(parlio_rx_unit_handle_t rx_uni
     esp_cam_io_parl_handle_t esp_cam_io_parl = (esp_cam_io_parl_handle_t)user_data;
     for (uint16_t index = 0; index < received_bytes; index++) {
         uint8_t current_byte = data[index];
-        if (esp_cam_io_parl->info.captured) {
+        if (esp_cam_io_parl->info.captured && esp_cam_io_parl->info.frame.buffer) {
             if (esp_cam_io_parl->info.index < esp_cam_io_parl->info.frame.length) {
                 esp_cam_io_parl->info.frame.buffer[esp_cam_io_parl->info.index++] = current_byte;
             }
@@ -228,9 +228,17 @@ esp_err_t esp_cam_del_io_parl(esp_cam_io_parl_handle_t esp_cam_io_parl) {
 }
 
 esp_err_t esp_cam_io_parl_set_alloc_size(esp_cam_io_parl_handle_t esp_cam_io_parl, uint32_t alloc_size, uint32_t heap_caps) {
-    ESP_RETURN_ON_FALSE(esp_cam_io_parl && alloc_size > 160 && heap_caps != 0, ESP_ERR_INVALID_ARG, TAG, "Invalid arguments");
+    ESP_RETURN_ON_FALSE(esp_cam_io_parl && alloc_size > 160, ESP_ERR_INVALID_ARG, TAG, "Invalid arguments");
     esp_cam_io_parl->alloc_size = alloc_size;
-    esp_cam_io_parl->alloc_heap_caps = heap_caps;
+    if (heap_caps) {
+        esp_cam_io_parl->alloc_heap_caps = heap_caps;
+    }
+    if (esp_cam_io_parl->info.frame.buffer) { // To avoid misalignment
+        esp_cam_io_parl->info.captured = false;
+        free(esp_cam_io_parl->info.frame.buffer);
+        esp_cam_io_parl->info.frame.buffer = NULL;
+        esp_cam_io_parl->info.frame.length = 0;
+    }
     return ESP_OK;
 }
 
