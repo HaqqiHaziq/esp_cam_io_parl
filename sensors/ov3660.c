@@ -143,7 +143,7 @@ static int calc_sysclk(int xclk, bool pll_bypass, int pll_multiplier, int pll_sy
     return SYSCLK;
 }
 
-static int set_pll(sensor_t *sensor, bool bypass, uint8_t multiplier, uint8_t sys_div, uint8_t pre_div, bool root_2x, uint8_t seld5, bool pclk_manual, uint8_t pclk_div) {
+static int set_pll(camera_sensor_t *sensor, bool bypass, uint8_t multiplier, uint8_t sys_div, uint8_t pre_div, bool root_2x, uint8_t seld5, bool pclk_manual, uint8_t pclk_div) {
     int ret = 0;
     if (multiplier > 31 || sys_div > 15 || pre_div > 3 || pclk_div > 31 ||
         seld5 > 3) {
@@ -175,9 +175,9 @@ static int set_pll(sensor_t *sensor, bool bypass, uint8_t multiplier, uint8_t sy
     return ret;
 }
 
-static int set_ae_level(sensor_t *sensor, int level);
+static int set_ae_level(camera_sensor_t *sensor, int level);
 
-static int reset(sensor_t *sensor) {
+static int reset(camera_sensor_t *sensor) {
     int ret = 0;
     // Software Reset: clear all registers and reset them to their default
     // values
@@ -196,7 +196,7 @@ static int reset(sensor_t *sensor) {
     return ret;
 }
 
-static int set_pixformat(sensor_t *sensor, pixformat_t pixformat) {
+static int set_pixformat(camera_sensor_t *sensor, camera_pixformat_t pixformat) {
     int ret = 0;
     const uint16_t(*regs)[2];
 
@@ -235,7 +235,7 @@ static int set_pixformat(sensor_t *sensor, pixformat_t pixformat) {
     return ret;
 }
 
-static int set_image_options(sensor_t *sensor) {
+static int set_image_options(camera_sensor_t *sensor) {
     int ret = 0;
     uint8_t reg20 = 0;
     uint8_t reg21 = 0;
@@ -320,19 +320,19 @@ static int set_image_options(sensor_t *sensor) {
     return ret;
 }
 
-static int set_framesize(sensor_t *sensor, framesize_t framesize) {
+static int set_framesize(camera_sensor_t *sensor, camera_framesize_t framesize) {
     int ret = 0;
 
     if (framesize > FRAMESIZE_QXGA) {
         ESP_LOGW(TAG, "Invalid framesize: %u", framesize);
         framesize = FRAMESIZE_QXGA;
     }
-    framesize_t old_framesize = sensor->status.framesize;
+    camera_framesize_t old_framesize = sensor->status.framesize;
     sensor->status.framesize = framesize;
-    uint16_t w = resolution[framesize].width;
-    uint16_t h = resolution[framesize].height;
-    aspect_ratio_t ratio = resolution[sensor->status.framesize].aspect_ratio;
-    ratio_settings_t settings = ratio_table[ratio];
+    uint16_t w = camera_resolution[framesize].width;
+    uint16_t h = camera_resolution[framesize].height;
+    camera_aspect_ratio_t ratio = camera_resolution[sensor->status.framesize].aspect_ratio;
+    camera_ratio_settings_t settings = ratio_table[ratio];
 
     sensor->status.binning = (w <= (settings.max_width / 2) && h <= (settings.max_height / 2));
     sensor->status.scale = !((w == settings.max_width && h == settings.max_height) || (w == (settings.max_width / 2) && h == (settings.max_height / 2)));
@@ -366,7 +366,7 @@ static int set_framesize(sensor_t *sensor, framesize_t framesize) {
     }
 
     if (sensor->pixformat == PIXFORMAT_JPEG) {
-        if (framesize == FRAMESIZE_QXGA || sensor->xclk_freq_hz == 16000000) {
+        if (framesize == FRAMESIZE_QXGA) {
             // 40MHz SYSCLK and 10MHz PCLK
             ret = set_pll(sensor, false, 24, 1, 3, false, 0, true, 8);
         } else {
@@ -398,7 +398,7 @@ fail:
     return ret;
 }
 
-static int set_hmirror(sensor_t *sensor, int enable) {
+static int set_hmirror(camera_sensor_t *sensor, int enable) {
     int ret = 0;
     sensor->status.hmirror = enable;
     ret = set_image_options(sensor);
@@ -408,7 +408,7 @@ static int set_hmirror(sensor_t *sensor, int enable) {
     return ret;
 }
 
-static int set_vflip(sensor_t *sensor, int enable) {
+static int set_vflip(camera_sensor_t *sensor, int enable) {
     int ret = 0;
     sensor->status.vflip = enable;
     ret = set_image_options(sensor);
@@ -418,7 +418,7 @@ static int set_vflip(sensor_t *sensor, int enable) {
     return ret;
 }
 
-static int set_quality(sensor_t *sensor, int qs) {
+static int set_quality(camera_sensor_t *sensor, int qs) {
     int ret = 0;
     ret = write_reg(sensor->sccb_address, COMPRESSION_CTRL07, qs & 0x3f);
     if (ret == 0) {
@@ -428,7 +428,7 @@ static int set_quality(sensor_t *sensor, int qs) {
     return ret;
 }
 
-static int set_colorbar(sensor_t *sensor, int enable) {
+static int set_colorbar(camera_sensor_t *sensor, int enable) {
     int ret = 0;
     ret = write_reg_bits(sensor->sccb_address, PRE_ISP_TEST_SETTING_1, TEST_COLOR_BAR, enable);
     if (ret == 0) {
@@ -438,7 +438,7 @@ static int set_colorbar(sensor_t *sensor, int enable) {
     return ret;
 }
 
-static int set_gain_ctrl(sensor_t *sensor, int enable) {
+static int set_gain_ctrl(camera_sensor_t *sensor, int enable) {
     int ret = 0;
     ret = write_reg_bits(sensor->sccb_address, AEC_PK_MANUAL,
                          AEC_PK_MANUAL_AGC_MANUALEN, !enable);
@@ -449,7 +449,7 @@ static int set_gain_ctrl(sensor_t *sensor, int enable) {
     return ret;
 }
 
-static int set_exposure_ctrl(sensor_t *sensor, int enable) {
+static int set_exposure_ctrl(camera_sensor_t *sensor, int enable) {
     int ret = 0;
     ret = write_reg_bits(sensor->sccb_address, AEC_PK_MANUAL, AEC_PK_MANUAL_AEC_MANUALEN, !enable);
     if (ret == 0) {
@@ -459,7 +459,7 @@ static int set_exposure_ctrl(sensor_t *sensor, int enable) {
     return ret;
 }
 
-static int set_whitebal(sensor_t *sensor, int enable) {
+static int set_whitebal(camera_sensor_t *sensor, int enable) {
     int ret = 0;
     ret = write_reg_bits(sensor->sccb_address, ISP_CONTROL_01, 0x01, enable);
     if (ret == 0) {
@@ -470,7 +470,7 @@ static int set_whitebal(sensor_t *sensor, int enable) {
 }
 
 // Advanced AWB
-static int set_dcw_dsp(sensor_t *sensor, int enable) {
+static int set_dcw_dsp(camera_sensor_t *sensor, int enable) {
     int ret = 0;
     ret = write_reg_bits(sensor->sccb_address, 0x5183, 0x80, !enable);
     if (ret == 0) {
@@ -481,7 +481,7 @@ static int set_dcw_dsp(sensor_t *sensor, int enable) {
 }
 
 // night mode enable
-static int set_aec2(sensor_t *sensor, int enable) {
+static int set_aec2(camera_sensor_t *sensor, int enable) {
     int ret = 0;
     ret = write_reg_bits(sensor->sccb_address, 0x3a00, 0x04, enable);
     if (ret == 0) {
@@ -491,7 +491,7 @@ static int set_aec2(sensor_t *sensor, int enable) {
     return ret;
 }
 
-static int set_bpc_dsp(sensor_t *sensor, int enable) {
+static int set_bpc_dsp(camera_sensor_t *sensor, int enable) {
     int ret = 0;
     ret = write_reg_bits(sensor->sccb_address, 0x5000, 0x04, enable);
     if (ret == 0) {
@@ -501,7 +501,7 @@ static int set_bpc_dsp(sensor_t *sensor, int enable) {
     return ret;
 }
 
-static int set_wpc_dsp(sensor_t *sensor, int enable) {
+static int set_wpc_dsp(camera_sensor_t *sensor, int enable) {
     int ret = 0;
     ret = write_reg_bits(sensor->sccb_address, 0x5000, 0x02, enable);
     if (ret == 0) {
@@ -512,7 +512,7 @@ static int set_wpc_dsp(sensor_t *sensor, int enable) {
 }
 
 // Gamma enable
-static int set_raw_gma_dsp(sensor_t *sensor, int enable) {
+static int set_raw_gma_dsp(camera_sensor_t *sensor, int enable) {
     int ret = 0;
     ret = write_reg_bits(sensor->sccb_address, 0x5000, 0x20, enable);
     if (ret == 0) {
@@ -522,7 +522,7 @@ static int set_raw_gma_dsp(sensor_t *sensor, int enable) {
     return ret;
 }
 
-static int set_lenc_dsp(sensor_t *sensor, int enable) {
+static int set_lenc_dsp(camera_sensor_t *sensor, int enable) {
     int ret = 0;
     ret = write_reg_bits(sensor->sccb_address, 0x5000, 0x80, enable);
     if (ret == 0) {
@@ -532,7 +532,7 @@ static int set_lenc_dsp(sensor_t *sensor, int enable) {
     return ret;
 }
 
-static int get_agc_gain(sensor_t *sensor) {
+static int get_agc_gain(camera_sensor_t *sensor) {
     int ra = read_reg(sensor->sccb_address, 0x350a);
     if (ra < 0) {
         return 0;
@@ -549,7 +549,7 @@ static int get_agc_gain(sensor_t *sensor) {
 }
 
 // real gain
-static int set_agc_gain(sensor_t *sensor, int gain) {
+static int set_agc_gain(camera_sensor_t *sensor, int gain) {
     int ret = 0;
     if (gain < 0) {
         gain = 0;
@@ -573,7 +573,7 @@ static int set_agc_gain(sensor_t *sensor, int gain) {
     return ret;
 }
 
-static int get_aec_value(sensor_t *sensor) {
+static int get_aec_value(camera_sensor_t *sensor) {
     int ra = read_reg(sensor->sccb_address, 0x3500);
     if (ra < 0) {
         return 0;
@@ -590,7 +590,7 @@ static int get_aec_value(sensor_t *sensor) {
     return res;
 }
 
-static int set_aec_value(sensor_t *sensor, int value) {
+static int set_aec_value(camera_sensor_t *sensor, int value) {
     int ret = 0, max_val = 0;
     max_val = read_reg16(sensor->sccb_address, 0x380e);
     if (max_val < 0) {
@@ -612,7 +612,7 @@ static int set_aec_value(sensor_t *sensor, int value) {
     return ret;
 }
 
-static int set_ae_level(sensor_t *sensor, int level) {
+static int set_ae_level(camera_sensor_t *sensor, int level) {
     int ret = 0;
     if (level < -5 || level > 5) {
         return -1;
@@ -647,7 +647,7 @@ static int set_ae_level(sensor_t *sensor, int level) {
     return ret;
 }
 
-static int set_wb_mode(sensor_t *sensor, int mode) {
+static int set_wb_mode(camera_sensor_t *sensor, int mode) {
     int ret = 0;
     if (mode < 0 || mode > 4) {
         return -1;
@@ -689,7 +689,7 @@ static int set_wb_mode(sensor_t *sensor, int mode) {
     return ret;
 }
 
-static int set_awb_gain_dsp(sensor_t *sensor, int enable) {
+static int set_awb_gain_dsp(camera_sensor_t *sensor, int enable) {
     int ret = 0;
     int old_mode = sensor->status.wb_mode;
     int mode = enable ? old_mode : 0;
@@ -704,7 +704,7 @@ static int set_awb_gain_dsp(sensor_t *sensor, int enable) {
     return ret;
 }
 
-static int set_special_effect(sensor_t *sensor, int effect) {
+static int set_special_effect(camera_sensor_t *sensor, int effect) {
     int ret = 0;
     if (effect < 0 || effect > 6) {
         return -1;
@@ -723,7 +723,7 @@ static int set_special_effect(sensor_t *sensor, int effect) {
     return ret;
 }
 
-static int set_brightness(sensor_t *sensor, int level) {
+static int set_brightness(camera_sensor_t *sensor, int level) {
     int ret = 0;
     uint8_t value = 0;
     bool negative = false;
@@ -766,7 +766,7 @@ static int set_brightness(sensor_t *sensor, int level) {
     return ret;
 }
 
-static int set_contrast(sensor_t *sensor, int level) {
+static int set_contrast(camera_sensor_t *sensor, int level) {
     int ret = 0;
     if (level > 3 || level < -3) {
         return -1;
@@ -780,7 +780,7 @@ static int set_contrast(sensor_t *sensor, int level) {
     return ret;
 }
 
-static int set_saturation(sensor_t *sensor, int level) {
+static int set_saturation(camera_sensor_t *sensor, int level) {
     int ret = 0;
     if (level > 4 || level < -4) {
         return -1;
@@ -801,7 +801,7 @@ static int set_saturation(sensor_t *sensor, int level) {
     return ret;
 }
 
-static int set_sharpness(sensor_t *sensor, int level) {
+static int set_sharpness(camera_sensor_t *sensor, int level) {
     int ret = 0;
     if (level > 3 || level < -3) {
         return -1;
@@ -827,7 +827,7 @@ static int set_sharpness(sensor_t *sensor, int level) {
     return ret;
 }
 
-static int set_gainceiling(sensor_t *sensor, gainceiling_t level) {
+static int set_gainceiling(camera_sensor_t *sensor, camera_gainceiling_t level) {
     int ret = 0, l = (int)level;
 
     ret = write_reg(sensor->sccb_address, 0x3A18, (l >> 8) & 3) ||
@@ -840,14 +840,14 @@ static int set_gainceiling(sensor_t *sensor, gainceiling_t level) {
     return ret;
 }
 
-static int get_denoise(sensor_t *sensor) {
+static int get_denoise(camera_sensor_t *sensor) {
     if (!check_reg_mask(sensor->sccb_address, 0x5308, 0x10)) {
         return 0;
     }
     return (read_reg(sensor->sccb_address, 0x5306) / 4) + 1;
 }
 
-static int set_denoise(sensor_t *sensor, int level) {
+static int set_denoise(camera_sensor_t *sensor, int level) {
     int ret = 0;
     if (level < 0 || level > 8) {
         return -1;
@@ -865,7 +865,7 @@ static int set_denoise(sensor_t *sensor, int level) {
     return ret;
 }
 
-static int get_reg(sensor_t *sensor, int reg, int mask) {
+static int get_reg(camera_sensor_t *sensor, int reg, int mask) {
     int ret = 0, ret2 = 0;
     if (mask > 0xFF) {
         ret = read_reg16(sensor->sccb_address, reg);
@@ -886,7 +886,7 @@ static int get_reg(sensor_t *sensor, int reg, int mask) {
     return ret;
 }
 
-static int set_reg(sensor_t *sensor, int reg, int mask, int value) {
+static int set_reg(camera_sensor_t *sensor, int reg, int mask, int value) {
     int ret = 0, ret2 = 0;
     if (mask > 0xFF) {
         ret = read_reg16(sensor->sccb_address, reg);
@@ -918,7 +918,7 @@ static int set_reg(sensor_t *sensor, int reg, int mask, int value) {
     return ret;
 }
 
-static int set_res_raw(sensor_t *sensor, int startX, int startY, int endX, int endY, int offsetX, int offsetY, int totalX, int totalY, int outputX, int outputY, bool scale, bool binning) {
+static int set_res_raw(camera_sensor_t *sensor, int startX, int startY, int endX, int endY, int offsetX, int offsetY, int totalX, int totalY, int outputX, int outputY, bool scale, bool binning) {
     int ret = 0;
     ret =
         write_addr_reg(sensor->sccb_address, X_ADDR_ST_H, startX, startY) ||
@@ -935,19 +935,19 @@ static int set_res_raw(sensor_t *sensor, int startX, int startY, int endX, int e
     return ret;
 }
 
-static int _set_pll(sensor_t *sensor, int bypass, int multiplier, int sys_div, int root_2x, int pre_div, int seld5, int pclk_manual, int pclk_div) {
+static int _set_pll(camera_sensor_t *sensor, int bypass, int multiplier, int sys_div, int root_2x, int pre_div, int seld5, int pclk_manual, int pclk_div) {
     return set_pll(sensor, bypass > 0, multiplier, sys_div, pre_div,
                    root_2x > 0, seld5, pclk_manual > 0, pclk_div);
 }
 
-static int set_xclk(sensor_t *sensor, int timer, int xclk) {
+static int set_xclk(camera_sensor_t *sensor, int timer, int xclk) {
     int ret = 0;
     sensor->xclk_freq_hz = xclk * 1000000U;
     ret = xclk_timer_conf(timer, sensor->xclk_freq_hz);
     return ret;
 }
 
-static int init_status(sensor_t *sensor) {
+static int init_status(camera_sensor_t *sensor) {
     sensor->status.brightness = 0;
     sensor->status.contrast = 0;
     sensor->status.saturation = 0;
@@ -976,7 +976,7 @@ static int init_status(sensor_t *sensor) {
     return 0;
 }
 
-int ov3660_detect(int sccb_address, sensor_id_t *id) {
+int ov3660_detect(int sccb_address, camera_sensor_id_t *id) {
     if (OV3660_SCCB_ADDR == sccb_address) {
         uint8_t h = sccb_read16(sccb_address, 0x300A);
         uint8_t l = sccb_read16(sccb_address, 0x300B);
@@ -991,7 +991,7 @@ int ov3660_detect(int sccb_address, sensor_id_t *id) {
     return 0;
 }
 
-int ov3660_init(sensor_t *sensor) {
+int ov3660_init(camera_sensor_t *sensor) {
     sensor->reset = reset;
     sensor->set_pixformat = set_pixformat;
     sensor->set_framesize = set_framesize;
