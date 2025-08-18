@@ -435,7 +435,7 @@ Configuration structure for camera sensor initialization.
 | `scl_io`        | `gpio_num_t`         | GPIO pin for camera SCL line                |
 | `xclk_hz`       | `uint32_t`           | XCLK frequency in Hz                        |
 | `pixel_format`  | `camera_pixformat_t` | Pixel format (`PIXFORMAT_*`)                |
-| `frame_size`    | `framesize_t`        | Frame size (`FRAMESIZE_*`)                  |
+| `frame_size`    | `camera_framesize_t` | Frame size (`FRAMESIZE_*`)                  |
 | `ledc_timer`    | `ledc_timer_t`       | LEDC timer for XCLK generation              |
 | `ledc_channel`  | `ledc_channel_t`     | LEDC channel for XCLK generation            |
 | `jpeg_quality`  | `int`                | JPEG quality (0–63, lower = higher quality) |
@@ -729,4 +729,5 @@ Frees a previously received frame buffer.
 
 * `ESP_ERR_INVALID_ARG` — Invalid buffer.
 * `ESP_OK` — Success.
+
 
