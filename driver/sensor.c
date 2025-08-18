@@ -5,10 +5,10 @@ const camera_sensor_info_t camera_sensor[CAMERA_MODEL_MAX] = {
     // The sequence must be consistent with camera_model_t
     {CAMERA_OV2640, "OV2640", OV2640_SCCB_ADDR, OV2640_PID, FRAMESIZE_UXGA, true},
     {CAMERA_OV3660, "OV3660", OV3660_SCCB_ADDR, OV3660_PID, FRAMESIZE_QXGA, true},
-    {CAMERA_OV5640, "OV5640", OV5640_SCCB_ADDR, OV5640_PID, FRAMESIZE_QSXGA, true},
+    {CAMERA_OV5640, "OV5640", OV5640_SCCB_ADDR, OV5640_PID, FRAMESIZE_5MP, true},
 };
 
-const resolution_info_t resolution[FRAMESIZE_INVALID] = {
+const camera_resolution_info_t camera_resolution[FRAMESIZE_INVALID] = {
     {   96,   96, ASPECT_RATIO_1X1   }, /* 96x96 */
     {  128,  128, ASPECT_RATIO_1X1   }, /* 128x128 */
     {  160,  120, ASPECT_RATIO_4X3   }, /* QQVGA */
@@ -40,7 +40,7 @@ const resolution_info_t resolution[FRAMESIZE_INVALID] = {
     { 2592, 1944, ASPECT_RATIO_4X3   }, /* 5MP */
 };
 
-camera_sensor_info_t *esp_camera_sensor_get_info(sensor_id_t *id) {
+camera_sensor_info_t *esp_camera_sensor_get_info(camera_sensor_id_t *id) {
     for (int i = 0; i < CAMERA_MODEL_MAX; i++) {
         if (id->PID == camera_sensor[i].pid) {
             return (camera_sensor_info_t *)&camera_sensor[i];

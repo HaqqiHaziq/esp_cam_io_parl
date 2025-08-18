@@ -26,7 +26,7 @@
 static const char *TAG = "esp_camera_sensor";
 
 typedef struct {
-    sensor_t sensor;
+    camera_sensor_t sensor;
     image_info_t image;
 } esp_camera_sensor_state_t;
 
@@ -35,11 +35,11 @@ static const char *CAMERA_PIXFORMAT_NVS_KEY = "pixformat";
 static esp_camera_sensor_state_t *esp_camera_sensor = NULL;
 
 typedef struct {
-    int (*detect)(int sccb_address, sensor_id_t *id);
-    int (*init)(sensor_t *sensor);
-} sensor_func_t;
+    int (*detect)(int sccb_address, camera_sensor_id_t *id);
+    int (*init)(camera_sensor_t *sensor);
+} camera_sensor_func_t;
 
-static const sensor_func_t g_sensors[] = {
+static const camera_sensor_func_t g_sensors[] = {
 #if CONFIG_ESP_CAM_IO_PARL_OV2640
     {ov2640_detect, ov2640_init},
 #endif
@@ -77,7 +77,7 @@ static esp_err_t esp_camera_sensor_probe(const esp_camera_sensor_config_t *confi
     }
 
     if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "sccb init err");
+        ESP_LOGE(TAG, "SCCB init error");
         goto err;
     }
 
@@ -126,8 +126,8 @@ static esp_err_t esp_camera_sensor_probe(const esp_camera_sensor_config_t *confi
      * Attention: Some sensors have the same SCCB address. Therefore, several
      * attempts may be made in the detection process
      */
-    sensor_id_t *id = &esp_camera_sensor->sensor.id;
-    for (size_t i = 0; i < sizeof(g_sensors) / sizeof(sensor_func_t); i++) {
+    camera_sensor_id_t *id = &esp_camera_sensor->sensor.id;
+    for (size_t i = 0; i < sizeof(g_sensors) / sizeof(camera_sensor_func_t); i++) {
         if (g_sensors[i].detect(sccb_address, id)) {
             camera_sensor_info_t *info = esp_camera_sensor_get_info(id);
             if (NULL != info) {
@@ -166,8 +166,8 @@ esp_err_t esp_camera_sensor_init(const esp_camera_sensor_config_t *config) {
         goto fail;
     }
 
-    framesize_t frame_size = (framesize_t)config->frame_size;
-    pixformat_t pix_format = (pixformat_t)config->pixel_format;
+    camera_framesize_t frame_size = (camera_framesize_t)config->frame_size;
+    camera_pixformat_t pix_format = (camera_pixformat_t)config->pixel_format;
 
     if (PIXFORMAT_JPEG == pix_format && (!camera_sensor[camera_model].support_jpeg)) {
         ESP_LOGE(TAG, "JPEG format is not supported on this sensor");
@@ -176,16 +176,15 @@ esp_err_t esp_camera_sensor_init(const esp_camera_sensor_config_t *config) {
     }
 
     if (frame_size > camera_sensor[camera_model].max_size) {
-        ESP_LOGW(TAG, "The frame size exceeds the maximum for this sensor, it "
-                      "will be forced to the maximum possible value");
+        ESP_LOGW(TAG, "The frame size exceeds the maximum for this sensor, it will be forced to the maximum possible value");
         frame_size = camera_sensor[camera_model].max_size;
     }
 
     esp_camera_sensor->sensor.status.framesize = frame_size;
     esp_camera_sensor->sensor.pixformat = pix_format;
 
-    ESP_LOGD(TAG, "Setting frame size to %dx%d", resolution[frame_size].width,
-             resolution[frame_size].height);
+    ESP_LOGD(TAG, "Setting frame size to %dx%d", camera_resolution[frame_size].width,
+             camera_resolution[frame_size].height);
     if (esp_camera_sensor->sensor.set_framesize(&esp_camera_sensor->sensor, frame_size) != 0) {
         ESP_LOGE(TAG, "Failed to set frame size");
         err = ESP_ERR_CAMERA_FAILED_TO_SET_FRAME_SIZE;
@@ -229,13 +228,13 @@ image_info_t *esp_camera_sensor_get_image(void) {
     if (esp_camera_sensor == NULL) {
         return NULL;
     }
-    esp_camera_sensor->image.width = resolution[esp_camera_sensor->sensor.status.framesize].width;
-    esp_camera_sensor->image.height = resolution[esp_camera_sensor->sensor.status.framesize].height;
+    esp_camera_sensor->image.width = camera_resolution[esp_camera_sensor->sensor.status.framesize].width;
+    esp_camera_sensor->image.height = camera_resolution[esp_camera_sensor->sensor.status.framesize].height;
     esp_camera_sensor->image.format = esp_camera_sensor->sensor.pixformat;
     return &esp_camera_sensor->image;
 }
 
-sensor_t *esp_camera_sensor_get(void) {
+camera_sensor_t *esp_camera_sensor_get(void) {
     if (esp_camera_sensor == NULL) {
         return NULL;
     }
@@ -247,7 +246,7 @@ esp_err_t esp_camera_sensor_save_to_nvs(const char *key) {
     nvs_handle_t handle;
 
     ESP_RETURN_ON_ERROR(nvs_open(key, NVS_READWRITE, &handle), TAG, "Failed to access nvs");
-    sensor_t *s = esp_camera_sensor_get();
+    camera_sensor_t *s = esp_camera_sensor_get();
     if (s != NULL) {
         ret = nvs_set_blob(handle, CAMERA_SENSOR_NVS_KEY, &s->status,
             sizeof(camera_status_t));
@@ -271,7 +270,7 @@ esp_err_t esp_camera_sensor_load_from_nvs(const char *key) {
     esp_err_t ret = nvs_open(key, NVS_READWRITE, &handle);
 
     if (ret == ESP_OK) {
-        sensor_t *s = esp_camera_sensor_get();
+        camera_sensor_t *s = esp_camera_sensor_get();
         camera_status_t st;
         if (s != NULL) {
             size_t size = sizeof(camera_status_t);
