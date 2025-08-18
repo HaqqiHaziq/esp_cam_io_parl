@@ -63,7 +63,7 @@ This component will be released as a library.
 
 # Examples
 
-## Capture & Stream Image
+## Capture & Stream Image (AP)
 ```c
 #include <stdbool.h>
 #include <stdio.h>
@@ -118,9 +118,8 @@ static const char *TAG = "parallel_io_camera";
 // Wi-Fi details
 #define ESP_WIFI_SSID "camera@2.4GHz"
 #define ESP_WIFI_PASS "my_camera"
-#define ESP_WIFI_CHANNEL 44
+#define ESP_WIFI_CHANNEL 2 // 44 (5GHz)
 #define MAX_STA_CONN 4
-
 
 #define PART_BOUNDARY "123456789000000000000987654321"
 static const char* _STREAM_CONTENT_TYPE = "multipart/x-mixed-replace;boundary=" PART_BOUNDARY;
