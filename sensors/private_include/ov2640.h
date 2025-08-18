@@ -8,7 +8,7 @@
  */
 #ifndef __OV2640_H__
 #define __OV2640_H__
-#include "../../../esp_cam_io_parl-v0.1.0-beta.2/driver/include/sensor.h"
+#include "sensor.h"
 /**
  * @brief Detect sensor pid
  *

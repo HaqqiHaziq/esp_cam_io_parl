@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "../../../esp_cam_io_parl-v0.1.0-beta.2/sensors/private_include/ov3660_regs.h"
+#include "ov3660_regs.h"
 #include "esp_attr.h"
 
 static const ratio_settings_t ratio_table[] = {
