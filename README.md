@@ -71,13 +71,6 @@ This component will be released as a library.
 #include <stdio.h>
 #include <unistd.h>
 
-#include "esp_rom_sys.h"
-#include "esp_system.h"
-#include "freertos/FreeRTOS.h"
-#include "freertos/idf_additions.h"
-#include "freertos/projdefs.h"
-#include "freertos/queue.h"
-
 #include "esp_err.h"
 #include "esp_event.h"
 #include "esp_heap_caps.h"
@@ -403,8 +396,8 @@ void app_main(void) {
     camera_sensor_t *sensor = esp_camera_sensor_get();
     ESP_LOGI(TAG, "Camera detected! Current quality = %u", sensor->status.quality);
 
-    sensor->set_vflip(s, true); // Adjust if the image is flipped vertically
-    sensor->set_hmirror(s, false); // Adjust if the image is flipped horizontally
+    sensor->set_vflip(sensor, true); // Adjust if the image is flipped vertically
+    sensor->set_hmirror(sensor, false); // Adjust if the image is flipped horizontally
 
     ESP_ERROR_CHECK(esp_cam_new_io_parl(&esp_cam_io_parl_config, &esp_cam_io_parl_handle));
     ESP_ERROR_CHECK(esp_cam_io_parl_enable(esp_cam_io_parl_handle, true));
@@ -736,3 +729,4 @@ Frees a previously received frame buffer.
 
 * `ESP_ERR_INVALID_ARG` — Invalid buffer.
 * `ESP_OK` — Success.
+
