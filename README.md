@@ -1,5 +1,7 @@
 # ESP32 Parallel IO Camera Driver
 
+[![Latest Pre-release](https://img.shields.io/github/v/release/HaqqiHaziq/esp_cam_io_parl?include_prereleases)](https://github.com/HaqqiHaziq/esp_cam_io_parl/releases)
+
 ## General Information
 
 This repository provides **ESP Parallel IO Camera** component (`esp_cam_io_parl`) that utilizes Parallel IO (PARLIO) peripheral to receive image data over DVP (Digital Video Port) using ESP32 SoCs that are capable of driving image sensors.
@@ -738,3 +740,4 @@ Frees a previously received frame buffer.
 
 
 ---
+
