@@ -31,7 +31,7 @@ This repository provides **ESP Parallel IO Camera** component (`esp_cam_io_parl`
 ## Important to Remember
 
 - It is recommended to have PSRAM installed and enabled for higher resolutions. Therefore, the ESP32-H2 is not recommended for image streaming due to its lack of PSRAM support and limited internal RAM. The ESP32-C6 can handle resolutions up to SVGA (tested with Wi-Fi enabled and a streaming web server, XGA can be reached with some tweaks).
-- This component currently only accepts JPEG image inputs from DVP sensors due to the limitations of the Parallel IO driver for some targets (e.g. ESP32-H2 and ESP32-C5). As a result, it uses software delimiter with PCLK gating to allow streaming JPEG image from the following image sensors (except OV2640).
+- This component currently only accepts JPEG image inputs from DVP sensors due to the limitations of the Parallel IO driver for some targets (e.g. ESP32-H2 and ESP32-C5). As a result, it uses software delimiter with PCLK gating to allow streaming JPEG image from the follwoing image sensors (except OV2640).
 - Currently only OV3660 and OV5640 sensors are implemented to have gated PCLK signals. OV2640 requires the target to have valid signals (e.g. ESP32-C6 and ESP32-P4) so it can properly interface with the following sensor. It is highly recommended to use OV5640 or OV3660 for targets with limited data width.
 - This component does not utilize VSYNC signals for controlling frames at the moment, support for receiving raw data will be possible if it gets implemented.
 
@@ -737,8 +737,4 @@ Frees a previously received frame buffer.
 * `ESP_ERR_INVALID_ARG` — Invalid buffer.
 * `ESP_OK` — Success.
 
-
 ---
-
-
-
