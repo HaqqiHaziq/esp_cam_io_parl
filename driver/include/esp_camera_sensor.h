@@ -23,8 +23,8 @@ typedef struct {
 
     uint32_t xclk_hz;               /*!< Frequency of XCLK signal, in Hz */
 
-    pixformat_t pixel_format;       /*!< Format of the pixel data: PIXFORMAT_ + YUV422|GRAYSCALE|RGB565|JPEG  */
-    framesize_t frame_size;         /*!< Size of the output image: FRAMESIZE_ + QVGA|CIF|VGA|SVGA|XGA|SXGA|UXGA  */
+    camera_pixformat_t pixel_format;       /*!< Format of the pixel data: PIXFORMAT_ + YUV422|GRAYSCALE|RGB565|JPEG  */
+    camera_framesize_t frame_size;         /*!< Size of the output image: FRAMESIZE_ + QVGA|CIF|VGA|SVGA|XGA|SXGA|UXGA  */
 
     ledc_timer_t ledc_timer;        /*!< LEDC timer to be used for generating XCLK  */
     ledc_channel_t ledc_channel;    /*!< LEDC channel to be used for generating XCLK  */
@@ -39,7 +39,7 @@ typedef struct {
 typedef struct {
     size_t width;               /*!< Width of the image in pixels */
     size_t height;              /*!< Height of the image in pixels */
-    pixformat_t format;         /*!< Format of the pixel data */
+    camera_pixformat_t format;         /*!< Format of the pixel data */
 } image_info_t;
 
 #define ESP_ERR_CAMERA_BASE 0x20000
@@ -82,7 +82,7 @@ image_info_t *esp_camera_sensor_get_image(void);
  *
  * @return pointer to the sensor
  */
-sensor_t *esp_camera_sensor_get(void);
+camera_sensor_t *esp_camera_sensor_get(void);
 
 /**
  * @brief Save camera settings to non-volatile-storage (NVS)

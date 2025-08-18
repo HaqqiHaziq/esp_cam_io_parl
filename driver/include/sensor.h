@@ -6,8 +6,8 @@
  * Sensor abstraction layer.
  *
  */
-#ifndef __SENSOR_H__
-#define __SENSOR_H__
+#ifndef __CAMERA_SENSOR_H__
+#define __CAMERA_SENSOR_H__
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -45,7 +45,7 @@ typedef enum {
     PIXFORMAT_RAW,       // RAW
     PIXFORMAT_RGB444,    // 3BP2P/RGB444
     PIXFORMAT_RGB555,    // 3BP2P/RGB555
-} pixformat_t;
+} camera_pixformat_t;
 
 typedef enum {
     FRAMESIZE_96X96,    // 96x96
@@ -78,14 +78,14 @@ typedef enum {
     FRAMESIZE_QSXGA,    // 2560x1920
     FRAMESIZE_5MP,      // 2592x1944
     FRAMESIZE_INVALID
-} framesize_t;
+} camera_framesize_t;
 
 typedef struct {
     const camera_model_t model;
     const char *name;
     const camera_sccb_addr_t sccb_address;
     const camera_pid_t pid;
-    const framesize_t max_size;
+    const camera_framesize_t max_size;
     const bool support_jpeg;
 } camera_sensor_info_t;
 
@@ -99,7 +99,7 @@ typedef enum {
     ASPECT_RATIO_5X4,
     ASPECT_RATIO_1X1,
     ASPECT_RATIO_9X16
-} aspect_ratio_t;
+} camera_aspect_ratio_t;
 
 typedef enum {
     GAINCEILING_2X,
@@ -109,7 +109,7 @@ typedef enum {
     GAINCEILING_32X,
     GAINCEILING_64X,
     GAINCEILING_128X,
-} gainceiling_t;
+} camera_gainceiling_t;
 
 typedef struct {
         uint16_t max_width;
@@ -122,16 +122,16 @@ typedef struct {
         uint16_t offset_y;
         uint16_t total_x;
         uint16_t total_y;
-} ratio_settings_t;
+} camera_ratio_settings_t;
 
 typedef struct {
         const uint16_t width;
         const uint16_t height;
-        const aspect_ratio_t aspect_ratio;
-} resolution_info_t;
+        const camera_aspect_ratio_t aspect_ratio;
+} camera_resolution_info_t;
 
 // Resolution table (in sensor.c)
-extern const resolution_info_t resolution[];
+extern const camera_resolution_info_t camera_resolution[];
 // camera sensor table (in sensor.c)
 extern const camera_sensor_info_t camera_sensor[];
 
@@ -140,10 +140,10 @@ typedef struct {
     uint8_t MIDL;
     uint16_t PID;
     uint8_t VER;
-} sensor_id_t;
+} camera_sensor_id_t;
 
 typedef struct {
-    framesize_t framesize;//0 - 10
+    camera_framesize_t framesize;//0 - 10
     bool scale;
     bool binning;
     uint8_t quality;//0 - 63
@@ -173,60 +173,60 @@ typedef struct {
     uint8_t colorbar;
 } camera_status_t;
 
-typedef struct _sensor sensor_t;
-typedef struct _sensor {
-    sensor_id_t id;             // Sensor ID.
+typedef struct _camera_sensor camera_sensor_t;
+typedef struct _camera_sensor {
+    camera_sensor_id_t id;          // Sensor ID.
     uint8_t  sccb_address;          // Sensor I2C slave address.
-    pixformat_t pixformat;
+    camera_pixformat_t pixformat;
     camera_status_t status;
     int xclk_freq_hz;
 
     // Sensor function pointers
-    int  (*init_status)         (sensor_t *sensor);
-    int  (*reset)               (sensor_t *sensor); // Reset the configuration of the sensor, and return ESP_OK if reset is successful
-    int  (*set_pixformat)       (sensor_t *sensor, pixformat_t pixformat);
-    int  (*set_framesize)       (sensor_t *sensor, framesize_t framesize);
-    int  (*set_contrast)        (sensor_t *sensor, int level);
-    int  (*set_brightness)      (sensor_t *sensor, int level);
-    int  (*set_saturation)      (sensor_t *sensor, int level);
-    int  (*set_sharpness)       (sensor_t *sensor, int level);
-    int  (*set_denoise)         (sensor_t *sensor, int level);
-    int  (*set_gainceiling)     (sensor_t *sensor, gainceiling_t gainceiling);
-    int  (*set_quality)         (sensor_t *sensor, int quality);
-    int  (*set_colorbar)        (sensor_t *sensor, int enable);
-    int  (*set_whitebal)        (sensor_t *sensor, int enable);
-    int  (*set_gain_ctrl)       (sensor_t *sensor, int enable);
-    int  (*set_exposure_ctrl)   (sensor_t *sensor, int enable);
-    int  (*set_hmirror)         (sensor_t *sensor, int enable);
-    int  (*set_vflip)           (sensor_t *sensor, int enable);
+    int  (*init_status)         (camera_sensor_t *sensor);
+    int  (*reset)               (camera_sensor_t *sensor); // Reset the configuration of the sensor, and return ESP_OK if reset is successful
+    int  (*set_pixformat)       (camera_sensor_t *sensor, camera_pixformat_t pixformat);
+    int  (*set_framesize)       (camera_sensor_t *sensor, camera_framesize_t framesize);
+    int  (*set_contrast)        (camera_sensor_t *sensor, int level);
+    int  (*set_brightness)      (camera_sensor_t *sensor, int level);
+    int  (*set_saturation)      (camera_sensor_t *sensor, int level);
+    int  (*set_sharpness)       (camera_sensor_t *sensor, int level);
+    int  (*set_denoise)         (camera_sensor_t *sensor, int level);
+    int  (*set_gainceiling)     (camera_sensor_t *sensor, camera_gainceiling_t gainceiling);
+    int  (*set_quality)         (camera_sensor_t *sensor, int quality);
+    int  (*set_colorbar)        (camera_sensor_t *sensor, int enable);
+    int  (*set_whitebal)        (camera_sensor_t *sensor, int enable);
+    int  (*set_gain_ctrl)       (camera_sensor_t *sensor, int enable);
+    int  (*set_exposure_ctrl)   (camera_sensor_t *sensor, int enable);
+    int  (*set_hmirror)         (camera_sensor_t *sensor, int enable);
+    int  (*set_vflip)           (camera_sensor_t *sensor, int enable);
 
-    int  (*set_aec2)            (sensor_t *sensor, int enable);
-    int  (*set_awb_gain)        (sensor_t *sensor, int enable);
-    int  (*set_agc_gain)        (sensor_t *sensor, int gain);
-    int  (*set_aec_value)       (sensor_t *sensor, int gain);
+    int  (*set_aec2)            (camera_sensor_t *sensor, int enable);
+    int  (*set_awb_gain)        (camera_sensor_t *sensor, int enable);
+    int  (*set_agc_gain)        (camera_sensor_t *sensor, int gain);
+    int  (*set_aec_value)       (camera_sensor_t *sensor, int gain);
 
-    int  (*set_special_effect)  (sensor_t *sensor, int effect);
-    int  (*set_wb_mode)         (sensor_t *sensor, int mode);
-    int  (*set_ae_level)        (sensor_t *sensor, int level);
+    int  (*set_special_effect)  (camera_sensor_t *sensor, int effect);
+    int  (*set_wb_mode)         (camera_sensor_t *sensor, int mode);
+    int  (*set_ae_level)        (camera_sensor_t *sensor, int level);
 
-    int  (*set_dcw)             (sensor_t *sensor, int enable);
-    int  (*set_bpc)             (sensor_t *sensor, int enable);
-    int  (*set_wpc)             (sensor_t *sensor, int enable);
+    int  (*set_dcw)             (camera_sensor_t *sensor, int enable);
+    int  (*set_bpc)             (camera_sensor_t *sensor, int enable);
+    int  (*set_wpc)             (camera_sensor_t *sensor, int enable);
 
-    int  (*set_raw_gma)         (sensor_t *sensor, int enable);
-    int  (*set_lenc)            (sensor_t *sensor, int enable);
+    int  (*set_raw_gma)         (camera_sensor_t *sensor, int enable);
+    int  (*set_lenc)            (camera_sensor_t *sensor, int enable);
 
-    int  (*get_reg)             (sensor_t *sensor, int reg, int mask);
-    int  (*set_reg)             (sensor_t *sensor, int reg, int mask, int value);
-    int  (*set_res_raw)         (sensor_t *sensor, int startX, int startY, int endX, int endY, int offsetX, int offsetY, int totalX, int totalY, int outputX, int outputY, bool scale, bool binning);
-    int  (*set_pll)             (sensor_t *sensor, int bypass, int mul, int sys, int root, int pre, int seld5, int pclken, int pclk);
-    int  (*set_xclk)            (sensor_t *sensor, int timer, int xclk);
-} sensor_t;
+    int  (*get_reg)             (camera_sensor_t *sensor, int reg, int mask);
+    int  (*set_reg)             (camera_sensor_t *sensor, int reg, int mask, int value);
+    int  (*set_res_raw)         (camera_sensor_t *sensor, int startX, int startY, int endX, int endY, int offsetX, int offsetY, int totalX, int totalY, int outputX, int outputY, bool scale, bool binning);
+    int  (*set_pll)             (camera_sensor_t *sensor, int bypass, int mul, int sys, int root, int pre, int seld5, int pclken, int pclk);
+    int  (*set_xclk)            (camera_sensor_t *sensor, int timer, int xclk);
+} camera_sensor_t;
 
-camera_sensor_info_t *esp_camera_sensor_get_info(sensor_id_t *id);
+camera_sensor_info_t *esp_camera_sensor_get_info(camera_sensor_id_t *id);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __SENSOR_H__ */
+#endif /* __CAMERA_SENSOR_H__ */
