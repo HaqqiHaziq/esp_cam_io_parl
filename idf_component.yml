@@ -11,4 +11,4 @@ targets:
   - esp32p4
   - esp32c5
 dependencies:
-  idf: ">=4.4"
+  idf: ">=5.4"
