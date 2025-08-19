@@ -8,18 +8,18 @@ set(priv_include_dirs
 )
 set(include_dirs
   driver/include
-  )
+)
 set(srcs
   driver/esp_camera_sensor.c
   driver/esp_cam_io_parl.c
   driver/sccb.c
   driver/sensor.c
   driver/xclk.c
-  
+
   sensors/ov2640.c
   sensors/ov3660.c
   sensors/ov5640.c
-  )
+)
 
 set(priv_requires esp_timer freertos nvs_flash)
 
