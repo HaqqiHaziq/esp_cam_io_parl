@@ -421,7 +421,7 @@ void app_main(void) {
 # API Reference
 
 ## `esp_camera_sensor`
-#### ESP Camera Sensor component included in this package to interface with OV2640, OV3660 and OV5640 camera sensors. It is a modified version of `esp_camera.h` component by Espressif.
+ESP Camera Sensor component included in this package to interface with OV2640, OV3660 and OV5640 camera sensors. It is a modified version of `esp_camera.h` component by Espressif.
 ```c
 #include "esp_camera_sensor.h"
 ```
@@ -538,7 +538,7 @@ Load camera settings from NVS.
 ---
 
 ## `esp_cam_io_parl`
-#### ESP Parallel IO Camera component to interface with the DVP port of the following camera sensor.
+ESP Parallel IO Camera component to interface with the DVP port of the following camera sensor.
 ```c
 #include "esp_cam_io_parl.h"
 ```
@@ -735,5 +735,3 @@ Frees a previously received frame buffer.
 
 * `ESP_ERR_INVALID_ARG` — Invalid buffer.
 * `ESP_OK` — Success.
-
-
