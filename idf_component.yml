@@ -18,4 +18,4 @@ tags:
   - esp32-parlio
   - esp32-cam-parlio
 dependencies:
-  idf: ">=5.4"
+  idf: ">=5.3"
