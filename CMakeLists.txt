@@ -21,12 +21,7 @@ set(srcs
   sensors/ov5640.c
   )
 
-set(priv_requires freertos nvs_flash)
-
-set(min_version_for_esp_timer "4.2")
-if (idf_version VERSION_GREATER_EQUAL min_version_for_esp_timer)
-  list(APPEND priv_requires esp_timer)
-endif()
+set(priv_requires esp_timer freertos nvs_flash)
 
 idf_component_register(
   SRCS ${srcs}
