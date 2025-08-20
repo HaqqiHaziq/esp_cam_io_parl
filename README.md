@@ -17,11 +17,11 @@ This repository provides **ESP Parallel IO Camera** component (`esp_cam_io_parl`
 
 ### Supported Sensors
 
-| Model   | Max resolution | Color type | Output format                                                     | Lens Size |
-| ------- | -------------- | ---------- | ----------------------------------------------------------------- | --------- |
-| OV2640  | 1600 x 1200    | color      | YUV(422/420)/YCbCr422<br>RGB565/555<br>8-bit compressed data<br>8/10-bit Raw RGB data | 1/4"     |
-| OV3660  | 2048 x 1536    | color      | raw RGB data<br/>RGB565/555/444<br/>CCIR656<br/>YCbCr422<br/>compression | 1/5"     |
-| OV5640  | 2592 x 1944    | color      | RAW RGB<br/>RGB565/555/444<br/>CCIR656<br/>YUV422/420<br/>YCbCr422<br/>compression | 1/4"     |
+| Model   | Max resolution | Color type | Output format                                                     | Lens Size | Supported |
+| ------- | -------------- | ---------- | ----------------------------------------------------------------- | --------- | --------- |
+| OV2640  | 1600 x 1200    | color      | YUV(422/420)/YCbCr422<br>RGB565/555<br>8-bit compressed data<br>8/10-bit Raw RGB data | 1/4"     | ⚠️ (Only on ESP32-C6 & ESP32-P4) |
+| OV3660  | 2048 x 1536    | color      | raw RGB data<br/>RGB565/555/444<br/>CCIR656<br/>YCbCr422<br/>compression | 1/5"     | ✅ |
+| OV5640  | 2592 x 1944    | color      | RAW RGB<br/>RGB565/555/444<br/>CCIR656<br/>YUV422/420<br/>YCbCr422<br/>compression | 1/4"     | ✅ |
 
 ### DVP Data Width
 
@@ -31,6 +31,7 @@ This repository provides **ESP Parallel IO Camera** component (`esp_cam_io_parl`
 | ESP32-H2  | 8 (No valid signals)         | 48MHz                                 | Gated PCLK with software delimiter for 8 data lines. This target does not accept valid signals with 8 data lines. |
 | ESP32-P4  | 16 (8 with valid signals)    | 80MHz                                 | Gated PCLK with software delimiter for 16 data lines, HREF (level delimiter) or HSYNC (pulse delimiter) signals for 8 data lines. |
 | ESP32-C5  | 8 (No valid signals)         | 80MHz                                 | Gated PCLK with software delimiter for 8 data lines. This target does not accept valid signals with 8 data lines. |
+| ESP32-H4  | ?                            | ?                                     | ? |
 
 ## Important to Remember
 
@@ -917,4 +918,5 @@ Frees a previously received frame buffer.
 
 * `ESP_ERR_INVALID_ARG` — Invalid buffer.
 * `ESP_OK` — Success.
+
 
