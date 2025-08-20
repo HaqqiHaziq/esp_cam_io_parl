@@ -566,7 +566,7 @@ ESP Parallel IO Camera component to interface with the DVP port of the following
 ```
 ### Data Types
 
-#### `esp_cam_io_parl_pclk_edge`
+#### `esp_cam_io_parl_pclk_edge_t`
 
 > **PCLK edge configuration for sampling incoming data.**
 
@@ -574,6 +574,16 @@ ESP Parallel IO Camera component to interface with the DVP port of the following
 | -------------------------- | ------------------------------------- |
 | `ESP_CAM_IO_PARL_PCLK_NEG` | Sample PCLK data on the negative edge |
 | `ESP_CAM_IO_PARL_PCLK_POS` | Sample PCLK data on the positive edge |
+
+#### `esp_cam_io_parl_input_format_t`
+
+> **Input color format. Only takes effect if `jpeg_en` is `0` (Not implemented)**
+
+| Enumerator                 | Description                           |
+| -------------------------- | ------------------------------------- |
+| `ESP_CAM_IO_PARL_RGB565` | RGB565 (2 bytes per pixel) |
+| `ESP_CAM_IO_PARL_RGB888` | RGB888 (3 bytes per pixel) |
+| `ESP_CAM_IO_PARL_YUV422` | YUV422 (2 bytes per pixel) |
 
 #### `esp_cam_io_parl_config_t`
 
@@ -584,11 +594,12 @@ ESP Parallel IO Camera component to interface with the DVP port of the following
 | `data_width`         | `size_t`       | DVP data width (8 or 16 bits depending on SoC capabilities) |
 | `queue_frames`       | `size_t`       | Number of frames to be queued                               |
 | `pclk_io`            | `gpio_num_t`   | PCLK GPIO pin                                               |
-| `pclk_sample_edge`   | `esp_cam_io_parl_pclk_edge` | Sampling edge (`ESP_CAM_IO_PARL_PCLK_NEG` or `ESP_CAM_IO_PARL_PCLK_POS`)                              |
+| `pclk_sample_edge`   | `esp_cam_io_parl_pclk_edge_t` | Sampling edge (`ESP_CAM_IO_PARL_PCLK_NEG` or `ESP_CAM_IO_PARL_PCLK_POS`)                              |
 | `vsync_io`           | `gpio_num_t`   | VSYNC GPIO pin *(Not implemented)*                          |
 | `de_io`              | `gpio_num_t`   | DE (HREF) GPIO pin, set to -1 if unused                     |
 | `hsync_io`           | `gpio_num_t`   | HSYNC GPIO pin, set to -1 if unused                         |
 | `data_io[]`          | `gpio_num_t`   | Data line GPIOs                                             |
+| `input_type`         | `esp_cam_io_parl_input_format_t`   | Input color format (Not implemented)    |
 | `flags.invert_vsync` | `bool` | Invert VSYNC *(Not implemented)*                            |
 | `flags.invert_de`    | `bool` | Invert DE pin (active low)                                  |
 | `flags.invert_hsync` | `bool` | Invert HSYNC pin (active on rising edge)                    |
@@ -757,6 +768,3 @@ Frees a previously received frame buffer.
 
 * `ESP_ERR_INVALID_ARG` — Invalid buffer.
 * `ESP_OK` — Success.
-
-
-
