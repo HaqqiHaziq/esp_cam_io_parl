@@ -47,7 +47,11 @@ This repository provides **ESP Parallel IO Camera** component (`esp_cam_io_parl`
 
 ### Using with ESP-IDF
 #### Through `idf.py add-dependency`
-- To add the component as a dependency, run:
+- You can add the component through ESP Component Registry:
+```c
+idf.py add-dependency haqqihaziq/esp_cam_io_parl
+```
+- Additionally, to add the component as a dependency directly from GitHub `master` branch, run:
 ```c
 idf.py add-dependency --git "https://github.com/HaqqiHaziq/esp_cam_io_parl.git" esp_cam_io_parl
 ```
@@ -418,6 +422,23 @@ void app_main(void) {
 
 ---
 
+# Kconfig configurations
+You can go to `menuconfig` -> `Component config` -> `Parallel IO Camera configuration` to view the available configurations. Note that some targets may have different configurations.
+You can also enable the use of LP I2C for ESP32-C6, ESP32-P4 and ESP32-C5 for SCCB interface. Please check the TRM on each target for the pins of LP I2C.
+These are the list of default configurations for this component.
+```c
+CONFIG_ESP_CAM_IO_PARL_OV2640 y // Probes OV2640. ESP32-C5 and ESP32-H2 have this configuration disabled since this sensor does not support it
+CONFIG_ESP_CAM_IO_PARL_OV3660 y // Probes OV3660
+CONFIG_ESP_CAM_IO_PARL_OV5640 y // Probes OV5640
+CONFIG_ESP_CAM_IO_PARL_OV5640_AF n // Allows OV5640 with Autofocus function
+
+CONFIG_CAMERA_PAYLOAD_BUFFER_SIZE 0x8000 // Payload size: 32768
+CONFIG_ESP_CAM_IO_PARL_SCCB_I2C_PORT0 y // Use the I2C0 port by default
+CONFIG_ESP_CAM_IO_PARL_SCCB_I2C_PORT1 n // I2C1 only available on ESP32-P4 and ESP32-H2
+CONFIG_ESP_CAM_IO_PARL_SCCB_LP_I2C_PORT0 n // Only available on ESP32-C6, ESP32-P4 and ESP32-C5
+CONFIG_ESP_CAM_IO_PARL_SCCB_CLK_FREQ 100000 // Higher values allows for faster initialization for SCCB
+```
+
 # API Reference
 
 ## `esp_camera_sensor`
@@ -735,3 +756,4 @@ Frees a previously received frame buffer.
 
 * `ESP_ERR_INVALID_ARG` — Invalid buffer.
 * `ESP_OK` — Success.
+
