@@ -423,9 +423,9 @@ void app_main(void) {
 ---
 
 # Kconfig configurations
-You can go to `menuconfig` -> `Component config` -> `Parallel IO Camera configuration` to view the available configurations. Note that some targets may have different configurations.
-You can also enable the use of LP I2C for ESP32-C6, ESP32-P4 and ESP32-C5 for SCCB interface. Please check the TRM on each target for the pins of LP I2C.
-These are the list of default configurations for this component.
+You can go to `menuconfig` -> `Component config` -> `Parallel IO Camera configuration` to view the available configurations. Note that some targets may have different configurations.<br>
+You can also enable the use of LP I2C for ESP32-C6, ESP32-P4 and ESP32-C5 for SCCB interface. Please check the TRM on each target for the pins of LP I2C.<br>
+These are the list of default configurations for this component:
 ```c
 CONFIG_ESP_CAM_IO_PARL_OV2640 y // Probes OV2640. ESP32-C5 and ESP32-H2 have this configuration disabled since this sensor does not support it
 CONFIG_ESP_CAM_IO_PARL_OV3660 y // Probes OV3660
@@ -756,4 +756,5 @@ Frees a previously received frame buffer.
 
 * `ESP_ERR_INVALID_ARG` — Invalid buffer.
 * `ESP_OK` — Success.
+
 
