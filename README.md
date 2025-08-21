@@ -9,11 +9,11 @@ This repository provides **ESP Parallel IO Camera** component (`esp_cam_io_parl`
 
 ### Supported Targets
 
+- ESP32-C5
 - ESP32-C6
 - ESP32-H2
-- ESP32-P4
-- ESP32-C5
 - ESP32-H4
+- ESP32-P4
 
 ### Supported Sensors
 
@@ -930,3 +930,4 @@ Frees a previously received frame buffer.
 
 * `ESP_ERR_INVALID_ARG` — Invalid buffer.
 * `ESP_OK` — Success.
+
