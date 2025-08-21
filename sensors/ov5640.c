@@ -423,15 +423,10 @@ static int set_framesize(camera_sensor_t *sensor, camera_framesize_t framesize) 
     uint16_t h = camera_resolution[framesize].height;
     camera_aspect_ratio_t ratio = camera_resolution[framesize].aspect_ratio;
     camera_ratio_settings_t settings = ratio_table[ratio];
-    
-    if (framesize == FRAMESIZE_SXGAM || framesize == FRAMESIZE_HD) { // Adjust the offset
-        settings.offset_x = 32;
-        settings.offset_y = 16;
-    }
 
     sensor->status.binning = (w <= (settings.max_width / 2) && h <= (settings.max_height / 2));
     sensor->status.scale = !((w == settings.max_width && h == settings.max_height) ||
-          (w == (settings.max_width / 2) && h == (settings.max_height / 2))) && !(framesize == FRAMESIZE_WQXGA || framesize == FRAMESIZE_QHD || framesize == FRAMESIZE_QSXGA);
+          (w == (settings.max_width / 2) && h == (settings.max_height / 2))) && !(framesize == FRAMESIZE_WQXGA || framesize == FRAMESIZE_QHD || framesize == FRAMESIZE_QSXGA || framesize == FRAMESIZE_SXGAM);
 
     ret = write_addr_reg(sensor->sccb_address, X_ADDR_ST_H, settings.start_x, settings.start_y) ||
           write_addr_reg(sensor->sccb_address, X_ADDR_END_H, settings.end_x, settings.end_y) ||
@@ -439,6 +434,16 @@ static int set_framesize(camera_sensor_t *sensor, camera_framesize_t framesize) 
 
     if (ret) {
         goto fail;
+    }
+
+    if (framesize == FRAMESIZE_SXGAM) { // Adjust the offset
+        settings.offset_x = 32;
+        settings.offset_y = 12;
+    }
+    if (framesize == FRAMESIZE_HD) {
+        settings.offset_x = 32;
+        settings.offset_y = 16;
+        settings.total_y = 1484;
     }
 
     if (!sensor->status.binning) {
