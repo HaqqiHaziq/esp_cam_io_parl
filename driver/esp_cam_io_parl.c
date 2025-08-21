@@ -1,15 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include "esp_check.h"
+#include "esp_err.h"
 #include "esp_heap_caps.h"
-#include "portmacro.h"
-#include "time.h"
+#include "esp_idf_version.h"
+#include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/projdefs.h"
 #include "freertos/queue.h"
-#include "esp_log.h"
-#include "esp_err.h"
+#include "portmacro.h"
+#include "soc/clk_tree_defs.h"
+#include "time.h"
 
 #include "driver/parlio_rx.h"
 #include "hal/parlio_types.h"
@@ -19,6 +22,7 @@
 static const char *TAG = "esp_cam_io_parl";
 
 #define ESP_CAM_IO_PARL_CHECK_ISR(condition, err) if (!(condition)) { return err; }
+#define MIN_FRAME_ALLOC_SIZE 160
 
 struct esp_cam_io_parl_t {
     uint32_t alloc_size;
@@ -26,6 +30,7 @@ struct esp_cam_io_parl_t {
     uint16_t payload_size;
     uint8_t *payload;
     uint32_t use_soft_delimiter : 1;
+    esp_cam_io_parl_config_t config;
     volatile struct {
         esp_cam_io_parl_trans_t frame;
         uint8_t last_byte;
@@ -56,11 +61,11 @@ static bool IRAM_ATTR on_partial_receive_callback(parlio_rx_unit_handle_t rx_uni
                 free(esp_cam_io_parl->info.frame.buffer);
                 esp_cam_io_parl->info.frame.buffer = NULL;
                 esp_cam_io_parl->info.frame.length = 0;
-                ESP_EARLY_LOGW(TAG, "JPEG buffer overflow");
                 esp_cam_io_parl->info.last_byte = current_byte;
+                ESP_EARLY_LOGW(TAG, "JPEG buffer overflow");
                 break;
             }
-            if (esp_cam_io_parl->info.last_byte == 0xFF && current_byte == 0xD9 && esp_cam_io_parl->info.index < esp_cam_io_parl->info.frame.length) {
+            if (esp_cam_io_parl->info.index > MIN_FRAME_ALLOC_SIZE && esp_cam_io_parl->info.last_byte == 0xFF && current_byte == 0xD9 && esp_cam_io_parl->info.index < esp_cam_io_parl->info.frame.length) {
                 //ESP_EARLY_LOGI(TAG, "Received JPEG EOI at offset %u / %u (%u bytes)", index, received_bytes - 1, jpeg_capture_data.length);
                 esp_cam_io_parl->info.captured = false;
 
@@ -77,9 +82,7 @@ static bool IRAM_ATTR on_partial_receive_callback(parlio_rx_unit_handle_t rx_uni
                         free(old_frame.buffer);
                     }
                     xQueueSendFromISR(esp_cam_io_parl->queue_handle, &frame, &xHigherPriorityTaskWoken);
-                    //ESP_EARLY_LOGW(TAG, "JPEG queue full, dropping frames");
                 }
-
                 if (xHigherPriorityTaskWoken) portYIELD_FROM_ISR();
             }
         }
@@ -143,7 +146,9 @@ esp_err_t esp_cam_new_io_parl(const esp_cam_io_parl_config_t *config, esp_cam_io
         .valid_gpio_num = valid_gpio,
         .flags = {
             .free_clk = config->flags.free_clk,
+#if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 4, 0)
             .allow_pd = config->flags.allow_pd,
+#endif
         },
     };
     memcpy(rx_unit_config.data_gpio_nums, config->data_io, PARLIO_RX_UNIT_MAX_DATA_WIDTH * sizeof(gpio_num_t));
@@ -153,6 +158,8 @@ esp_err_t esp_cam_new_io_parl(const esp_cam_io_parl_config_t *config, esp_cam_io
         free(esp_cam_io_parl->payload);
         esp_cam_io_parl->payload = NULL;
     }
+
+    esp_cam_io_parl->config = *config;
 
     if (valid_gpio == -1) {
         parlio_rx_soft_delimiter_config_t rx_delimiter_config = {
@@ -228,7 +235,7 @@ esp_err_t esp_cam_del_io_parl(esp_cam_io_parl_handle_t esp_cam_io_parl) {
 }
 
 esp_err_t esp_cam_io_parl_set_alloc_size(esp_cam_io_parl_handle_t esp_cam_io_parl, uint32_t alloc_size, uint32_t heap_caps) {
-    ESP_RETURN_ON_FALSE(esp_cam_io_parl && alloc_size > 160, ESP_ERR_INVALID_ARG, TAG, "Invalid arguments");
+    ESP_RETURN_ON_FALSE(esp_cam_io_parl && alloc_size > MIN_FRAME_ALLOC_SIZE, ESP_ERR_INVALID_ARG, TAG, "Invalid arguments");
     esp_cam_io_parl->alloc_size = alloc_size;
     if (heap_caps) {
         esp_cam_io_parl->alloc_heap_caps = heap_caps;

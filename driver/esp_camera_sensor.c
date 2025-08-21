@@ -30,8 +30,8 @@ typedef struct {
     image_info_t image;
 } esp_camera_sensor_state_t;
 
-static const char *CAMERA_SENSOR_NVS_KEY = "sensor";
-static const char *CAMERA_PIXFORMAT_NVS_KEY = "pixformat";
+static const char *CAMERA_SENSOR_NVS_KEY = "camera_sensor";
+static const char *CAMERA_PIXFORMAT_NVS_KEY = "camera_pixformat";
 static esp_camera_sensor_state_t *esp_camera_sensor = NULL;
 
 typedef struct {
@@ -241,79 +241,98 @@ camera_sensor_t *esp_camera_sensor_get(void) {
     return &esp_camera_sensor->sensor;
 }
 
-esp_err_t esp_camera_sensor_save_to_nvs(const char *key) {
-    esp_err_t ret;
+esp_err_t esp_camera_sensor_erase_nvs(const char *key) {
     nvs_handle_t handle;
-
     ESP_RETURN_ON_ERROR(nvs_open(key, NVS_READWRITE, &handle), TAG, "Failed to access nvs");
-    camera_sensor_t *s = esp_camera_sensor_get();
-    if (s != NULL) {
-        ret = nvs_set_blob(handle, CAMERA_SENSOR_NVS_KEY, &s->status,
-            sizeof(camera_status_t));
-        if (ret == ESP_OK) {
-            uint8_t pf = s->pixformat;
-            ret = nvs_set_u8(handle, CAMERA_PIXFORMAT_NVS_KEY, pf);
-        }
-        return ret;
-    } else {
-        return ESP_ERR_CAMERA_NOT_DETECTED;
-    }
+
+    esp_err_t ret = nvs_erase_key(handle, key);
+    ESP_GOTO_ON_ERROR(ret, err, TAG, "Failed to erase nvs");
+
+    ret = nvs_commit(handle);
+    ESP_GOTO_ON_ERROR(ret, err, TAG, "Failed to commit changes");
+
     nvs_close(handle);
     return ESP_OK;
+
+err:
+    nvs_close(handle);
+    return ret;
+}
+
+esp_err_t esp_camera_sensor_save_to_nvs(const char *key) {
+    camera_sensor_t *s = esp_camera_sensor_get();
+    ESP_RETURN_ON_FALSE(s != NULL, ESP_ERR_CAMERA_NOT_DETECTED, TAG, "Camera not detected");
+
+    esp_err_t ret;
+    nvs_handle_t handle;
+    ESP_RETURN_ON_ERROR(nvs_open(key, NVS_READWRITE, &handle), TAG, "Failed to access nvs");
+
+    ret = nvs_set_blob(handle, CAMERA_SENSOR_NVS_KEY, &s->status, sizeof(camera_status_t));
+    ESP_GOTO_ON_ERROR(ret, err, TAG, "Failed to set sensor blob");
+
+    uint8_t pf = s->pixformat;
+    ret = nvs_set_u8(handle, CAMERA_PIXFORMAT_NVS_KEY, pf);
+    ESP_GOTO_ON_ERROR(ret, err, TAG, "Failed to set pixformat");
+
+    ret = nvs_commit(handle);
+    ESP_GOTO_ON_ERROR(ret, err, TAG, "Failed to save camera settings");
+
+    nvs_close(handle);
+    return ESP_OK;
+
+err:
+    nvs_close(handle);
+    return ret;
 }
 
 esp_err_t esp_camera_sensor_load_from_nvs(const char *key) {
+    camera_sensor_t *s = esp_camera_sensor_get();
+    ESP_RETURN_ON_FALSE(s != NULL, ESP_ERR_CAMERA_NOT_DETECTED, TAG, "Camera not detected");
+
     nvs_handle_t handle;
+    ESP_RETURN_ON_ERROR(nvs_open(key, NVS_READWRITE, &handle), TAG, "Failed to access key");
+
+    camera_status_t st;
+    size_t size = sizeof(camera_status_t);
+    esp_err_t ret = nvs_get_blob(handle, CAMERA_SENSOR_NVS_KEY, &st, &size);
+    ESP_GOTO_ON_ERROR(ret, err, TAG, "Error fetching sensor blob");
+
+	s->set_ae_level(s, st.ae_level);
+	s->set_aec2(s, st.aec2);
+	s->set_aec_value(s, st.aec_value);
+	s->set_agc_gain(s, st.agc_gain);
+	s->set_awb_gain(s, st.awb_gain);
+	s->set_bpc(s, st.bpc);
+	s->set_brightness(s, st.brightness);
+	s->set_colorbar(s, st.colorbar);
+	s->set_contrast(s, st.contrast);
+	s->set_dcw(s, st.dcw);
+	s->set_denoise(s, st.denoise);
+	s->set_exposure_ctrl(s, st.aec);
+	s->set_framesize(s, st.framesize);
+	s->set_gain_ctrl(s, st.agc);
+	s->set_gainceiling(s, st.gainceiling);
+	s->set_hmirror(s, st.hmirror);
+	s->set_lenc(s, st.lenc);
+	s->set_quality(s, st.quality);
+	s->set_raw_gma(s, st.raw_gma);
+	s->set_saturation(s, st.saturation);
+	s->set_sharpness(s, st.sharpness);
+	s->set_special_effect(s, st.special_effect);
+	s->set_vflip(s, st.vflip);
+	s->set_wb_mode(s, st.wb_mode);
+	s->set_whitebal(s, st.awb);
+	s->set_wpc(s, st.wpc);
 
     uint8_t pf;
+    ret = nvs_get_u8(handle, CAMERA_PIXFORMAT_NVS_KEY, &pf);
+    ESP_GOTO_ON_ERROR(ret, err, TAG, "Error fetching pixformat key");
+    s->set_pixformat(s, pf);
 
-    esp_err_t ret = nvs_open(key, NVS_READWRITE, &handle);
+    nvs_close(handle);
+    return ESP_OK;
 
-    if (ret == ESP_OK) {
-        camera_sensor_t *s = esp_camera_sensor_get();
-        camera_status_t st;
-        if (s != NULL) {
-            size_t size = sizeof(camera_status_t);
-            ret = nvs_get_blob(handle, CAMERA_SENSOR_NVS_KEY, &st, &size);
-            if (ret == ESP_OK) {
-                s->set_ae_level(s, st.ae_level);
-                s->set_aec2(s, st.aec2);
-                s->set_aec_value(s, st.aec_value);
-                s->set_agc_gain(s, st.agc_gain);
-                s->set_awb_gain(s, st.awb_gain);
-                s->set_bpc(s, st.bpc);
-                s->set_brightness(s, st.brightness);
-                s->set_colorbar(s, st.colorbar);
-                s->set_contrast(s, st.contrast);
-                s->set_dcw(s, st.dcw);
-                s->set_denoise(s, st.denoise);
-                s->set_exposure_ctrl(s, st.aec);
-                s->set_framesize(s, st.framesize);
-                s->set_gain_ctrl(s, st.agc);
-                s->set_gainceiling(s, st.gainceiling);
-                s->set_hmirror(s, st.hmirror);
-                s->set_lenc(s, st.lenc);
-                s->set_quality(s, st.quality);
-                s->set_raw_gma(s, st.raw_gma);
-                s->set_saturation(s, st.saturation);
-                s->set_sharpness(s, st.sharpness);
-                s->set_special_effect(s, st.special_effect);
-                s->set_vflip(s, st.vflip);
-                s->set_wb_mode(s, st.wb_mode);
-                s->set_whitebal(s, st.awb);
-                s->set_wpc(s, st.wpc);
-            }
-            ret = nvs_get_u8(handle, CAMERA_PIXFORMAT_NVS_KEY, &pf);
-            if (ret == ESP_OK) {
-                s->set_pixformat(s, pf);
-            }
-        } else {
-            return ESP_ERR_CAMERA_NOT_DETECTED;
-        }
-        nvs_close(handle);
-        return ret;
-    } else {
-        ESP_LOGW(TAG, "Error (%d) opening nvs key \"%s\"", ret, key);
-        return ret;
-    }
+err:
+    nvs_close(handle);
+    return ret;
 }

@@ -29,8 +29,7 @@ const int SCCB_I2C_PORT_DEFAULT = 0;
 
 #define SCCB_MAX_DEVICES UINT8_MAX - 1
 
-typedef struct
-{
+typedef struct {
     i2c_master_dev_handle_t dev_handle;
     uint16_t address;
 } sccb_device_t;

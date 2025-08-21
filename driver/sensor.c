@@ -23,6 +23,7 @@ const camera_resolution_info_t camera_resolution[FRAMESIZE_INVALID] = {
     {  800,  600, ASPECT_RATIO_4X3   }, /* SVGA  */
     { 1024,  768, ASPECT_RATIO_4X3   }, /* XGA   */
     { 1280,  720, ASPECT_RATIO_16X9  }, /* HD    */
+    { 1200,  800, ASPECT_RATIO_3X2   }, /* 1200x800 */
     { 1280,  960, ASPECT_RATIO_4X3   }, /* SXGAM */
     { 1280, 1024, ASPECT_RATIO_5X4   }, /* SXGA  */
     { 1600, 1200, ASPECT_RATIO_4X3   }, /* UXGA  */
@@ -33,6 +34,7 @@ const camera_resolution_info_t camera_resolution[FRAMESIZE_INVALID] = {
     {  864, 1536, ASPECT_RATIO_9X16  }, /* Portrait 3MP   */
     { 2048, 1536, ASPECT_RATIO_4X3   }, /* QXGA  */
     // 5MP Sensors
+    { 2160, 1440, ASPECT_RATIO_3X2   }, /* 2160x1440 */
     { 2560, 1440, ASPECT_RATIO_16X9  }, /* QHD    */
     { 2560, 1600, ASPECT_RATIO_16X10 }, /* WQXGA  */
     { 1088, 1920, ASPECT_RATIO_9X16  }, /* Portrait FHD   */
