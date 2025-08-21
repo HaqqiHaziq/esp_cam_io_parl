@@ -682,6 +682,18 @@ Get a pointer to the sensor control structure.
 **Returns:**
 Pointer to `camera_sensor_t` structure.
 
+#### `esp_camera_sensor_erase_nvs`
+
+```c
+esp_err_t esp_camera_sensor_erase_nvs(const char *key);
+```
+
+Remove camera settings from NVS.
+
+**Parameters:**
+
+* `key` — Unique key for camera settings.
+
 #### `esp_camera_sensor_save_to_nvs`
 
 ```c
@@ -918,5 +930,3 @@ Frees a previously received frame buffer.
 
 * `ESP_ERR_INVALID_ARG` — Invalid buffer.
 * `ESP_OK` — Success.
-
-
