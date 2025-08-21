@@ -62,6 +62,7 @@ typedef enum {
     FRAMESIZE_SVGA,     // 800x600
     FRAMESIZE_XGA,      // 1024x768
     FRAMESIZE_HD,       // 1280x720
+    FRAMESIZE_1200X800, // 1200x800
     FRAMESIZE_SXGAM,    // 1280x960
     FRAMESIZE_SXGA,     // 1280x1024
     FRAMESIZE_UXGA,     // 1600x1200
@@ -72,6 +73,7 @@ typedef enum {
     FRAMESIZE_P_3MP,    //  864x1536
     FRAMESIZE_QXGA,     // 2048x1536
     // 5MP Sensors
+    FRAMESIZE_2160X1440,// 2160x1440
     FRAMESIZE_QHD,      // 2560x1440
     FRAMESIZE_WQXGA,    // 2560x1600
     FRAMESIZE_P_FHD,    // 1080x1920
@@ -112,22 +114,22 @@ typedef enum {
 } camera_gainceiling_t;
 
 typedef struct {
-        uint16_t max_width;
-        uint16_t max_height;
-        uint16_t start_x;
-        uint16_t start_y;
-        uint16_t end_x;
-        uint16_t end_y;
-        uint16_t offset_x;
-        uint16_t offset_y;
-        uint16_t total_x;
-        uint16_t total_y;
+    uint16_t max_width;
+    uint16_t max_height;
+    uint16_t start_x;
+    uint16_t start_y;
+    uint16_t end_x;
+    uint16_t end_y;
+    uint16_t offset_x;
+    uint16_t offset_y;
+    uint16_t total_x;
+    uint16_t total_y;
 } camera_ratio_settings_t;
 
 typedef struct {
-        const uint16_t width;
-        const uint16_t height;
-        const camera_aspect_ratio_t aspect_ratio;
+    const uint16_t width;
+    const uint16_t height;
+    const camera_aspect_ratio_t aspect_ratio;
 } camera_resolution_info_t;
 
 // Resolution table (in sensor.c)

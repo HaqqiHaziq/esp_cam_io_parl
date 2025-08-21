@@ -63,6 +63,7 @@ typedef struct {
     uint16_t payload_size; /*!< DMA buffer size */
     uint8_t *payload; /*!< DMA buffer */
     uint32_t use_soft_delimiter : 1; /*!< Is using PARLIO RX software delimiter */
+    esp_cam_io_parl_config_t config;
     volatile struct {
         esp_cam_io_parl_trans_t frame; /*!< Frame buffer data */
         uint8_t last_byte; /*!< Last byte captured */

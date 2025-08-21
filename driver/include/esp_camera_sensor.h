@@ -5,10 +5,8 @@
 
 #include "esp_err.h"
 #include "soc/gpio_num.h"
-#include "driver/ledc.h"
+#include "hal/ledc_types.h"
 #include "sensor.h"
-#include "sys/time.h"
-#include "sdkconfig.h"
 
 /**
  * @brief Configuration structure for camera sensor initialization
@@ -83,6 +81,13 @@ image_info_t *esp_camera_sensor_get_image(void);
  * @return pointer to the sensor
  */
 camera_sensor_t *esp_camera_sensor_get(void);
+
+/**
+ * @brief Delete camera seetings from non-volatile-storage (NVS)
+ *
+ * @param[in] key   A unique nvs key name for the camera settings
+ */
+esp_err_t esp_camera_sensor_erase_nvs(const char *key);
 
 /**
  * @brief Save camera settings to non-volatile-storage (NVS)
